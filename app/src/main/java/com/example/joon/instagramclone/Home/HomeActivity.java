@@ -120,9 +120,9 @@ public class HomeActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout)findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewpager);
         //set icon for each tab
-        tabLayout.getTabAt(0).setIcon(R.drawable.ic_camera);
-        tabLayout.getTabAt(1).setIcon(R.drawable.instagram_logo);
-        tabLayout.getTabAt(2).setIcon(R.drawable.ic_arrow);
+        tabLayout.getTabAt(0).setCustomView(R.layout.layout_tab_camera);
+        tabLayout.getTabAt(1).setCustomView(R.layout.layout_tab_logo);
+        tabLayout.getTabAt(2).setCustomView(R.layout.layout_tab_arrow);
 
 
     }
