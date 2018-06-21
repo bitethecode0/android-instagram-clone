@@ -47,6 +47,7 @@ public class ImageManager {
         int h = bm.getHeight();
 
         Matrix matrix = new Matrix();
+        matrix.postRotate(90);
         return Bitmap.createBitmap(bm,0,0,w,h,matrix,true);
     }
 
