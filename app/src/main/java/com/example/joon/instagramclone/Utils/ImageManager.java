@@ -2,6 +2,7 @@ package com.example.joon.instagramclone.Utils;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
@@ -17,9 +18,11 @@ public class ImageManager {
         File imageFile = new File(imgURL);
         FileInputStream fis = null;
         Bitmap bm = null;
+        Bitmap rotateBm =null;
         try{
             fis = new FileInputStream(imageFile);
             bm = BitmapFactory.decodeStream(fis);
+            rotateBm = rotate(bm);
         }catch (FileNotFoundException e){
             Log.e(TAG, "getBitmap: FileNotFoundException"+ e.getMessage());
         }finally {
@@ -29,8 +32,24 @@ public class ImageManager {
                 Log.e(TAG, "getBitmap: IOException"+ e.getMessage());
             }
         }
-        return bm;
+
+        /**
+         *  control the rotation here
+         */
+
+
+
+        return rotateBm;
     }
+
+    private static Bitmap rotate(Bitmap bm) {
+        int w = bm.getWidth();
+        int h = bm.getHeight();
+
+        Matrix matrix = new Matrix();
+        return Bitmap.createBitmap(bm,0,0,w,h,matrix,true);
+    }
+
 
     public static byte[] getBytesFromBitmap(Bitmap bm, int quality){
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
