@@ -19,9 +19,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-
+import com.example.joon.instagramclone.Model.Like;
 import com.example.joon.instagramclone.Model.Photo;
-import com.example.joon.instagramclone.Model.User;
 import com.example.joon.instagramclone.Model.UserAccountSettings;
 import com.example.joon.instagramclone.Model.UserSettings;
 import com.example.joon.instagramclone.R;
@@ -41,6 +40,9 @@ import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -163,7 +165,26 @@ public class ProfileFragment extends Fragment{
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()){
-                    photos.add(ds.getValue(Photo.class));
+                    Photo photo = new Photo();
+                    Map<String, Object> objectMap = (HashMap<String, Object>) ds.getValue();
+
+                    photo.setCaption(objectMap.get(getString(R.string.field_caption)).toString());
+                    photo.setTags(objectMap.get(getString(R.string.field_tags)).toString());
+                    photo.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
+                    photo.setPhoto_id(objectMap.get(getString(R.string.field_photo_id)).toString());
+                    photo.setUser_id(objectMap.get(getString(R.string.field_user_id)).toString());
+                    photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
+
+                    List<Like> likeList = new ArrayList<>();
+                    for(DataSnapshot subSnapshot : ds.child(getString(R.string.field_likes)).getChildren()){
+                        Like like = new Like();
+                        like.setUser_id(subSnapshot.getValue(Like.class).getUser_id());
+                        likeList.add(like);
+
+                    }
+
+                    photo.setLikes(likeList);
+                    photos.add(photo);
                 }
 
                 //set up gridview

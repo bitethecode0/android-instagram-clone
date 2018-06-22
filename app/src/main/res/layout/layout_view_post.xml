@@ -124,7 +124,7 @@
                 android:padding="20dp">
 
                 <TextView
-                    android:id="@+id/image_likes"
+                    android:id="@+id/tv_likes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Liked by "
