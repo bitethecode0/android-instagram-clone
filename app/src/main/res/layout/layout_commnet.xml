@@ -94,7 +94,7 @@
         <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:id="@+id/comment_like"
+            android:id="@+id/heartInComment"
             android:layout_alignParentRight="true"
             android:layout_marginRight="20dp"
             android:src="@drawable/ic_heart_border"
