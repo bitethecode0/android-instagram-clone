@@ -1,5 +1,6 @@
 package com.example.joon.instagramclone.Utils;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -45,7 +46,7 @@ public class ViewPostFragment extends Fragment{
     private SquareImageView mPostImage;
     private BottomNavigationViewEx bottomNavigationView;
     private TextView mBackLabel, mCaption, mUsername, mTimestamp,mLikes;
-    private ImageView mBackArrow, mEllipses, mHeartRed, mHeartWhite, mProfileImage;
+    private ImageView mBackArrow, mEllipses, mHeartRed, mHeartWhite, mProfileImage, mComment;
 
     //firebase
     private FirebaseAuth mAuth;
@@ -65,6 +66,11 @@ public class ViewPostFragment extends Fragment{
     private StringBuilder mUsers;
     private Boolean mLikedByCurrentUser;
     private String mLikeString;
+
+    public interface OnCommnetThreadSelectedListener{
+        void OnCommnetThreadSelectedListener(Photo photo);
+    }
+    OnCommnetThreadSelectedListener mOnCommnetThreadSelectedListener;
 
     public ViewPostFragment(){
         super();
@@ -87,7 +93,7 @@ public class ViewPostFragment extends Fragment{
         mHeartWhite = view.findViewById(R.id.image_heart);
         mProfileImage = view.findViewById(R.id.profile_photo);
         mLikes = view.findViewById(R.id.tv_likes);
-
+        mComment = view.findViewById(R.id.speech_bubble);
 
         mHeart = new Heart(mHeartWhite, mHeartRed);
         mGestureDetector = new GestureDetector(getActivity(), new GestureListener());
@@ -320,6 +326,20 @@ public class ViewPostFragment extends Fragment{
         mUsername.setText(mUserAccountSettings.getUsername());
         mLikes.setText(mLikeString);
 
+        mBackArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        });
+
+        mComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: navigating to the comment page");
+            }
+        });
+
 
         if(mLikedByCurrentUser){
             mHeartWhite.setVisibility(View.GONE);
@@ -340,6 +360,10 @@ public class ViewPostFragment extends Fragment{
                 }
             });
         }
+
+
+
+
 
 
     }
@@ -436,9 +460,21 @@ public class ViewPostFragment extends Fragment{
         if(mAuthStateListener!=null) mAuth.removeAuthStateListener(mAuthStateListener);
 
     }
+
+
     /**
      * ----------------------firebase------------------------
      */
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mOnCommnetThreadSelectedListener = (OnCommnetThreadSelectedListener) getActivity();
+        } catch (ClassCastException e) {
+            Log.e(TAG, "onAttach: ClassCastException: " + e.getMessage());
+        }
+    }
 
     private void setupBottomNavigationView(){
         Log.d(TAG, "setup bottom navigation view");

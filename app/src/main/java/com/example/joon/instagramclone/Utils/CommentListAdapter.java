@@ -12,7 +12,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.joon.instagramclone.Model.Comment;
+import com.example.joon.instagramclone.Model.UserAccountSettings;
 import com.example.joon.instagramclone.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -49,7 +57,7 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
 
     @NonNull
     @Override
-    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+    public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         final Viewholder holder;
 
         if(convertView ==null){
@@ -78,7 +86,32 @@ public class CommentListAdapter extends ArrayAdapter<Comment> {
         } else{
             holder.timestamp.setText("Today");
         }
-        //set the username
+        // retrieve data form user_accounting_settings for username and profile photo
+        // set the username, profile_photo
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child(mContext.getString(R.string.dbname_user_accounting_settings))
+                .orderByChild(mContext.getString(R.string.field_user_id))
+                .equalTo(getItem(position).getUser_id());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    holder.username.setText(ds.getValue(UserAccountSettings.class).getUsername());
+
+                    ImageLoader imageLoader = ImageLoader.getInstance();
+                    imageLoader.displayImage(
+                            ds.getValue(UserAccountSettings.class).getProfile_photo(), holder.profile_image
+                    );
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
 
 
         return convertView;
