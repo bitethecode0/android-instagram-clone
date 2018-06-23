@@ -4,16 +4,21 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.joon.instagramclone.Model.User;
 import com.example.joon.instagramclone.R;
 import com.example.joon.instagramclone.Utils.BottomNavigationViewHelper;
+import com.example.joon.instagramclone.Utils.UserListAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -22,7 +27,9 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class SearchActivity extends AppCompatActivity {
     private static final String TAG ="SearchActivity";
@@ -35,13 +42,44 @@ public class SearchActivity extends AppCompatActivity {
 
     //vars
     private List<User> mUserList;
+    private UserListAdapter mAapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_share);
+        setContentView(R.layout.activity_search);
+        mSearchParam = findViewById(R.id.tvSearch);
+        mListView = findViewById(R.id.listView);
+        
+
+
         hideSoftKeyboard();
         setupBottomNavigationView();
+        initTextListener();
+    }
+
+    private void initTextListener() {
+        Log.d(TAG, "initTextListener:  ");
+
+        mUserList = new ArrayList<>();
+
+        mSearchParam.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String text = mSearchParam.getText().toString().toLowerCase(Locale.getDefault());
+                searchForMatch(text);
+            }
+        });
     }
 
     private void searchForMatch(String keyword){
@@ -64,6 +102,7 @@ public class SearchActivity extends AppCompatActivity {
 
                         mUserList.add(singleSnapshot.getValue(User.class));
                         //update the users list view
+                        uadateUserList();
                     }
                 }
 
@@ -75,7 +114,18 @@ public class SearchActivity extends AppCompatActivity {
         }
     }
 
+    private void uadateUserList() {
+        Log.d(TAG, "uadateUserList: update user list");
+        mAapter = new UserListAdapter(SearchActivity.this, R.layout.layout_user_itemlist, mUserList);
+        mListView.setAdapter(mAapter);
 
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Log.d(TAG, "onItemClick: selected user: "+mUserList.get(position).toString());
+            }
+        });
+    }
 
 
     // --------------------------extra---------------------------------
