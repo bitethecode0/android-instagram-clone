@@ -15,6 +15,17 @@ public class Photo implements Parcelable{
     private List<Like> likes;
     private List<Comment> comments;
 
+    public static final Creator<Photo> CREATOR = new Creator<Photo>() {
+        @Override
+        public Photo createFromParcel(Parcel in) {
+            return new Photo(in);
+        }
+
+        @Override
+        public Photo[] newArray(int size) {
+            return new Photo[size];
+        }
+    };
 
     public Photo() {
     }
@@ -40,17 +51,13 @@ public class Photo implements Parcelable{
         tags = in.readString();
     }
 
-    public static final Creator<Photo> CREATOR = new Creator<Photo>() {
-        @Override
-        public Photo createFromParcel(Parcel in) {
-            return new Photo(in);
-        }
+    public List<Comment> getComments() {
+        return comments;
+    }
 
-        @Override
-        public Photo[] newArray(int size) {
-            return new Photo[size];
-        }
-    };
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
 
     public String getCaption() {
         return caption;
@@ -108,14 +115,6 @@ public class Photo implements Parcelable{
         this.likes = likes;
     }
 
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -129,10 +128,5 @@ public class Photo implements Parcelable{
         dest.writeString(photo_id);
         dest.writeString(user_id);
         dest.writeString(tags);
-    }
-
-    @Override
-    public String toString() {
-        return super.toString();
     }
 }

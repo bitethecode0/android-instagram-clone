@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.example.joon.instagramclone.Model.Comment;
 import com.example.joon.instagramclone.Model.Like;
 import com.example.joon.instagramclone.Model.Photo;
 import com.example.joon.instagramclone.Model.UserAccountSettings;
@@ -175,6 +176,8 @@ public class ProfileFragment extends Fragment{
                     photo.setUser_id(objectMap.get(getString(R.string.field_user_id)).toString());
                     photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
 
+
+
                     List<Like> likeList = new ArrayList<>();
                     for(DataSnapshot subSnapshot : ds.child(getString(R.string.field_likes)).getChildren()){
                         Like like = new Like();
@@ -182,6 +185,19 @@ public class ProfileFragment extends Fragment{
                         likeList.add(like);
 
                     }
+
+                    ArrayList<Comment> comments = new ArrayList<Comment>();
+                    for (DataSnapshot dSnapshot : ds
+                            .child(getString(R.string.field_comments)).getChildren()) {
+                        Comment comment = new Comment();
+                        comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
+                        comment.setComment(dSnapshot.getValue(Comment.class).getComment());
+                        comment.setDate_created(dSnapshot.getValue(Comment.class).getDate_created());
+                        comments.add(comment);
+                    }
+
+                    photo.setComments(comments);
+
 
                     photo.setLikes(likeList);
                     photos.add(photo);
