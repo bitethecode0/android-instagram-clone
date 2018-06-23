@@ -53,6 +53,7 @@
     <string name="share">share</string>
     <string name="share_to">Share To</string>
     <string name="post">Post</string>
+    <string name="string_search">search</string>
 
     <!--photo types-->
     <string name="new_photo">new_photo</string>

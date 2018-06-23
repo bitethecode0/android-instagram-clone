@@ -152,7 +152,7 @@ public class ViewCommentFragment extends Fragment {
             mPhoto.setComments(mCommentsList);
             setupWidgets();
         }
-         
+
 
         myRef.child(mContext.getString(R.string.dbname_photos))
                 .child(mPhoto.getPhoto_id())
