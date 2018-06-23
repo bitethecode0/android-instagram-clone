@@ -8,13 +8,14 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-
 import com.example.joon.instagramclone.Model.Photo;
 import com.example.joon.instagramclone.R;
+import com.example.joon.instagramclone.Utils.ViewCommentFragment;
 import com.example.joon.instagramclone.Utils.ViewPostFragment;
 
 public class ProfileActivity extends AppCompatActivity implements
-        ProfileFragment.OnGridImageSelectedListener, ViewPostFragment.OnCommnetThreadSelectedListener{
+        ProfileFragment.OnGridImageSelectedListener,
+        ViewPostFragment.OnCommentThreadSelectedListener{
     private static final String TAG ="ProfileActivity";
     private final static int ACTIVITY_NUM=4;
     private static final int NUM_GRID_COLUMS =3;
@@ -47,21 +48,28 @@ public class ProfileActivity extends AppCompatActivity implements
 
     }
 
-    /**
-     * implements interface for when comment selected
-     * @param photo
-     */
-
     @Override
-    public void OnCommnetThreadSelectedListener(Photo photo) {
+    public void OnCommentThreadSelectedListener(Photo photo) {
+        Log.d(TAG, "OnCommentThreadSelectedListener: going to the comment page with bundles.");
+        ViewCommentFragment fragment = new ViewCommentFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(getString(R.string.photo), photo);
+        fragment.setArguments(args);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, fragment);
+        transaction.addToBackStack(getString(R.string.view_comment_fragment));
+        transaction.commit();
 
     }
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
         init();
     }
 

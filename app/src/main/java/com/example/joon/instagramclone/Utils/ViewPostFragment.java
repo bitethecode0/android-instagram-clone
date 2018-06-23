@@ -67,10 +67,10 @@ public class ViewPostFragment extends Fragment{
     private Boolean mLikedByCurrentUser;
     private String mLikeString;
 
-    public interface OnCommnetThreadSelectedListener{
-        void OnCommnetThreadSelectedListener(Photo photo);
+    public interface OnCommentThreadSelectedListener{
+        void OnCommentThreadSelectedListener(Photo photo);
     }
-    OnCommnetThreadSelectedListener mOnCommnetThreadSelectedListener;
+    OnCommentThreadSelectedListener mOnCommentThreadSelectedListener;
 
     public ViewPostFragment(){
         super();
@@ -83,7 +83,7 @@ public class ViewPostFragment extends Fragment{
 
         mPostImage = view.findViewById(R.id.post_image);
         bottomNavigationView = view.findViewById(R.id.bottomNavBar);
-        mBackArrow = view.findViewById(R.id.backArrow);
+        mBackArrow = view.findViewById(R.id.ivBackArrow);
         mBackLabel = view.findViewById(R.id.tvBackLabel);
         mCaption = view.findViewById(R.id.image_caption);
         mUsername = view.findViewById(R.id.username);
@@ -329,14 +329,22 @@ public class ViewPostFragment extends Fragment{
         mBackArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getActivity().getSupportFragmentManager().popBackStack();
+
+                try{
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }catch (NullPointerException e){
+                    Log.e(TAG, "onClick: NullPointerException"+e.getMessage() );
+                }
+                //getActivity().finish();
             }
         });
+
 
         mComment.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: navigating to the comment page");
+                mOnCommentThreadSelectedListener.OnCommentThreadSelectedListener(mPhoto);
             }
         });
 
@@ -470,7 +478,7 @@ public class ViewPostFragment extends Fragment{
     public void onAttach(Context context) {
         super.onAttach(context);
         try {
-            mOnCommnetThreadSelectedListener = (OnCommnetThreadSelectedListener) getActivity();
+            mOnCommentThreadSelectedListener = (OnCommentThreadSelectedListener) getActivity();
         } catch (ClassCastException e) {
             Log.e(TAG, "onAttach: ClassCastException: " + e.getMessage());
         }
