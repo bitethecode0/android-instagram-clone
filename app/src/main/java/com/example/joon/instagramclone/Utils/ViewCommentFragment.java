@@ -143,7 +143,42 @@ public class ViewCommentFragment extends Fragment {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-                        x
+                        Query query  = myRef.child(getString(R.string.dbname_photos))
+                                .orderByChild(getString(R.string.field_photo_id))
+                                .equalTo(mPhoto.getPhoto_id());
+
+
+                        query.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                                    Photo photo = new Photo();
+                                    Map<String, Object> objectMap = (HashMap<String, Object>) ds.getValue();
+
+                                    photo.setCaption(objectMap.get(getString(R.string.field_caption)).toString());
+                                    photo.setTags(objectMap.get(getString(R.string.field_tags)).toString());
+                                    photo.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
+                                    photo.setPhoto_id(objectMap.get(getString(R.string.field_photo_id)).toString());
+                                    photo.setUser_id(objectMap.get(getString(R.string.field_user_id)).toString());
+                                    photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
+
+                                    mCommentsList.clear(); // clear comment every time it refreshes
+                                    Comment firstLineComment = new Comment();
+                                    firstLineComment.setComment(mPhoto.getCaption());
+                                    firstLineComment.setUser_id(mPhoto.getUser_id());
+                                    firstLineComment.setDate_created(mPhoto.getDate_created());
+
+                                    mCommentsList.add(firstLineComment);
+
+                                    for(DataSnapshot subSnapshot : ds.child(getString(R.string.field_comments)).getChildren()){
+                                        Comment comment = new Comment();
+                                        comment.setUser_id(subSnapshot.getValue(Comment.class).getUser_id());
+                                        comment.setComment(subSnapshot.getValue(Comment.class).getComment());
+                                        comment.setDate_created(subSnapshot.getValue(Comment.class).getDate_created());
+
+                                        mCommentsList.add(comment);
+
+                                    }
 
                                     photo.setComments(mCommentsList);
                                     mPhoto = photo;
