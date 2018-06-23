@@ -19,13 +19,20 @@ import com.example.joon.instagramclone.Model.Photo;
 import com.example.joon.instagramclone.R;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
 
 public class ViewCommentFragment extends Fragment {
@@ -65,7 +72,7 @@ public class ViewCommentFragment extends Fragment {
 
         mCommentsList = new ArrayList<>();
 
-        setupFirebaseAuth();
+
 
         try{
             mPhoto = getPhotoFromBundle();
@@ -73,42 +80,11 @@ public class ViewCommentFragment extends Fragment {
             Log.e(TAG, "onCreateView: NullPointerException"+ e.getMessage());
         }
 
-        Comment firstLineComment = new Comment();
-        firstLineComment.setComment(mPhoto.getCaption());
-        firstLineComment.setUser_id(mPhoto.getUser_id());
-        firstLineComment.setDate_created(mPhoto.getDate_created());
-
-        mCommentsList.add(firstLineComment);
-
-        CommentListAdapter adapter = new CommentListAdapter(getActivity(), R.layout.layout_commnet, mCommentsList);
-        mListView.setAdapter(adapter);
-
-        mCheckMark.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!mComment.getText().toString().equals("")){
-
-                    addNewComment(mComment.getText().toString());
-                    mComment.setText("");
-                    closeKeyboard();
-                } else{
-
-                }
-            }
-        });
-
-
-
+        setupFirebaseAuth();
         return view;
     }
 
-    private void closeKeyboard() {
-        View view = getActivity().getCurrentFocus();
-        if(view!=null){
-            InputMethodManager im = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            im.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
-    }
+
 
     private void addNewComment(String newComment){
         Log.d(TAG, "addNewComment: adding new comment "+newComment);
@@ -134,22 +110,6 @@ public class ViewCommentFragment extends Fragment {
 
     }
 
-    private String getTimestamp() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
-        sdf.setTimeZone(TimeZone.getTimeZone("US/Pacific"));
-        return sdf.format(new Date());
-    }
-
-    private Photo getPhotoFromBundle() {
-        Log.d(TAG, "getPhotoFromBundle: arguments"+getArguments());
-
-        Bundle bundle = this.getArguments();
-        if(bundle!=null){
-            return bundle.getParcelable(getString(R.string.photo));
-        } else {
-            return null;
-        }
-    }
 
     /**
      * ----------------------firebase------------------------
@@ -175,6 +135,75 @@ public class ViewCommentFragment extends Fragment {
                 }
             }
         };
+
+        myRef.child(getActivity().getString(R.string.dbname_photos))
+                .child(mPhoto.getPhoto_id())
+                .child(getActivity().getString(R.string.field_comments))
+                .addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                        x
+
+                                    photo.setComments(mCommentsList);
+                                    mPhoto = photo;
+                                    setupWidgets();
+//                    List<Like> likeList = new ArrayList<>();
+//                    for(DataSnapshot subSnapshot : ds.child(getString(R.string.field_likes)).getChildren()){
+//                        Like like = new Like();
+//                        like.setUser_id(subSnapshot.getValue(Like.class).getUser_id());
+//                        likeList.add(like);
+//
+//                    }
+                                }
+                            }
+
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+                    }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+    }
+
+    private void setupWidgets() {
+        CommentListAdapter adapter = new CommentListAdapter(getActivity(), R.layout.layout_commnet, mCommentsList);
+        mListView.setAdapter(adapter);
+
+        mCheckMark.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!mComment.getText().toString().equals("")){
+
+                    addNewComment(mComment.getText().toString());
+                    mComment.setText("");
+                    closeKeyboard();
+                } else{
+                }
+            }
+        });
     }
 
     @Override
@@ -198,5 +227,37 @@ public class ViewCommentFragment extends Fragment {
     /**
      * ----------------------firebase------------------------
      */
+
+    /**
+     * ----------------------extra-----------------------
+     */
+
+    private void closeKeyboard() {
+        View view = getActivity().getCurrentFocus();
+        if(view!=null){
+            InputMethodManager im = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            im.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
+    }
+
+    private Photo getPhotoFromBundle() {
+        Log.d(TAG, "getPhotoFromBundle: arguments"+getArguments());
+
+        Bundle bundle = this.getArguments();
+        if(bundle!=null){
+            return bundle.getParcelable(getString(R.string.photo));
+        } else {
+            return null;
+        }
+    }
+
+    private String getTimestamp() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+        sdf.setTimeZone(TimeZone.getTimeZone("US/Pacific"));
+        return sdf.format(new Date());
+    }
+
+
+
 
 }

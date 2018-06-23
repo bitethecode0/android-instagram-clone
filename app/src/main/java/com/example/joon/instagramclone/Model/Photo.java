@@ -13,6 +13,32 @@ public class Photo implements Parcelable{
     private String user_id;
     private String tags;
     private List<Like> likes;
+    private List<Comment> comments;
+
+
+    public Photo() {
+    }
+
+    public Photo(String caption, String date_created, String image_path, String photo_id,
+                 String user_id, String tags, List<Like> likes, List<Comment> comments) {
+        this.caption = caption;
+        this.date_created = date_created;
+        this.image_path = image_path;
+        this.photo_id = photo_id;
+        this.user_id = user_id;
+        this.tags = tags;
+        this.likes = likes;
+        this.comments = comments;
+    }
+
+    protected Photo(Parcel in) {
+        caption = in.readString();
+        date_created = in.readString();
+        image_path = in.readString();
+        photo_id = in.readString();
+        user_id = in.readString();
+        tags = in.readString();
+    }
 
     public static final Creator<Photo> CREATOR = new Creator<Photo>() {
         @Override
@@ -25,31 +51,6 @@ public class Photo implements Parcelable{
             return new Photo[size];
         }
     };
-
-    public Photo() {
-    }
-
-    public Photo(String caption, String date_created, String image_path,
-                 String photo_id, String user_id, String tags, List<Like> likes) {
-        this.caption = caption;
-        this.date_created = date_created;
-        this.image_path = image_path;
-        this.photo_id = photo_id;
-        this.user_id = user_id;
-        this.tags = tags;
-        this.likes = likes;
-    }
-
-    protected Photo(Parcel in) {
-        caption = in.readString();
-        date_created = in.readString();
-        image_path = in.readString();
-        photo_id = in.readString();
-        user_id = in.readString();
-        tags = in.readString();
-    }
-
-
 
     public String getCaption() {
         return caption;
@@ -107,6 +108,14 @@ public class Photo implements Parcelable{
         this.likes = likes;
     }
 
+    public List<Comment> getComments() {
+        return comments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        this.comments = comments;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -120,5 +129,10 @@ public class Photo implements Parcelable{
         dest.writeString(photo_id);
         dest.writeString(user_id);
         dest.writeString(tags);
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }
