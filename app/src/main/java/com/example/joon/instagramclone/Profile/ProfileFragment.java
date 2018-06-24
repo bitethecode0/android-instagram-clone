@@ -76,7 +76,12 @@ public class ProfileFragment extends Fragment{
     private ImageView profileMenu;
     private BottomNavigationViewEx bottomNavigationView;
 
+    //vars
     private Context mContext;
+    private int mFollowingCount=0;
+    private int mFollowersCount=0;
+    private int mPostsCount=0;
+
 
     @Nullable
     @Override
@@ -112,6 +117,10 @@ public class ProfileFragment extends Fragment{
         });
 
 
+        getFollowersCount();
+        getFollowingCount();
+        getPostsCount();
+
         setupBottomNavigationView();
         setupToolbar();
         initImageLoader();
@@ -125,6 +134,84 @@ public class ProfileFragment extends Fragment{
     /**
      * setup widgets retrieving data from the database
       */
+
+    private void getFollowingCount(){
+        Log.d(TAG, "getFollowing: count the following");
+
+        mFollowingCount=0;
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child(getString(R.string.dbname_following))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    Log.d(TAG, "onDataChange: found following ");
+                    mFollowingCount++;
+                }
+                mFollowing.setText(String.valueOf(mFollowingCount));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        Log.d(TAG, "getFollowersCount: following "+mFollowingCount);
+    }
+
+    private void getFollowersCount(){
+        Log.d(TAG, "getFollowing: count the following");
+
+        mFollowersCount=0;
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child(getString(R.string.dbname_followers))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    Log.d(TAG, "onDataChange: found following ");
+                    mFollowersCount++;
+                }
+                mFollowers.setText(String.valueOf(mFollowersCount));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        Log.d(TAG, "getFollowersCount: followers "+mFollowersCount);
+    }
+
+    private void getPostsCount(){
+        Log.d(TAG, "getFollowing: count the following");
+
+        mPostsCount=0;
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child(getString(R.string.dbname_user_photos))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    Log.d(TAG, "onDataChange: found following ");
+                    mPostsCount++;
+                }
+                mPosts.setText(String.valueOf(mPostsCount));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        Log.d(TAG, "getFollowersCount: posts "+mPostsCount);
+    }
 
     private void initImageLoader(){
         UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
@@ -147,9 +234,7 @@ public class ProfileFragment extends Fragment{
         mUsername.setText(settings.getUsername());
         mWebsite.setText(settings.getWebsite());
         mDescription.setText(settings.getDescription());
-        mPosts.setText(String.valueOf(settings.getPost()));
-        mFollowing.setText(String.valueOf(settings.getFollowing()));
-        mFollowers.setText(String.valueOf(settings.getFollowers()));
+
         mProgressBar.setVisibility(View.GONE);
 
 
