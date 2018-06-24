@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.example.joon.instagramclone.Model.Photo;
 import com.example.joon.instagramclone.R;
@@ -17,6 +18,7 @@ import com.example.joon.instagramclone.Utils.ViewProfileFragment;
 
 public class ProfileActivity extends AppCompatActivity implements
         ProfileFragment.OnGridImageSelectedListener,
+        ViewProfileFragment.OnGridImageSelectedListener,
         ViewPostFragment.OnCommentThreadSelectedListener{
     private static final String TAG ="ProfileActivity";
     private final static int ACTIVITY_NUM=4;
@@ -65,9 +67,6 @@ public class ProfileActivity extends AppCompatActivity implements
 
     }
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,38 +75,36 @@ public class ProfileActivity extends AppCompatActivity implements
     }
 
     private void init() {
-        Log.d(TAG, "init: inflating " + getString(R.string.profile_fragment));
+        Log.d(TAG, "init:  " + getString(R.string.profile_fragment));
 
         Intent intent = getIntent();
 
         if(intent.hasExtra(getString(R.string.calling_activity))){
-            Log.d(TAG, "init: searching for user object attached as intent extra.");
+            if(intent.hasExtra(getString(R.string.intent_user))){
+                Log.d(TAG, "init: searching for user object attached as intent extra.");
 
-            ViewProfileFragment fragment = new ViewProfileFragment();
-            Bundle args = new Bundle();
-            args.putParcelable(getString(R.string.intent_user),
-                    intent.getParcelableExtra(getString(R.string.intent_user)));
+                ViewProfileFragment fragment = new ViewProfileFragment();
+                Bundle args = new Bundle();
+                args.putParcelable(getString(R.string.intent_user),
+                        intent.getParcelableExtra(getString(R.string.intent_user)));
 
-            fragment.setArguments(args);
+                fragment.setArguments(args);
 
-            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-            transaction.replace(R.id.container, fragment);
-            transaction.addToBackStack(getString(R.string.view_profile_fragment));
-            transaction.commit();
-
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                transaction.replace(R.id.container, fragment);
+                transaction.addToBackStack(getString(R.string.view_profile_fragment));
+                transaction.commit();
+            } else{
+                Toast.makeText(mContext, "something went wrong", Toast.LENGTH_SHORT).show();
+            }
 
         } else{
+            Log.d(TAG, "init: inflating profile (go to your own profile)");
             ProfileFragment fragment = new ProfileFragment();
             FragmentTransaction transaction = ProfileActivity.this.getSupportFragmentManager().beginTransaction();
             transaction.replace(R.id.container, fragment);
             transaction.addToBackStack(getString(R.string.profile_fragment));
             transaction.commit();
         }
-
-
-
     }
-
-
-
 }

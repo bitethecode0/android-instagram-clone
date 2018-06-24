@@ -42,6 +42,7 @@ public class ViewPostFragment extends Fragment{
     private static final String TAG = "ViewPostFragment";
 
 
+
     //widgets
     private SquareImageView mPostImage;
     private BottomNavigationViewEx bottomNavigationView;
@@ -409,6 +410,7 @@ public class ViewPostFragment extends Fragment{
             return null;
         }
     }
+
     private int getActivityNumberFromBundle() {
         Log.d(TAG, "getPhotoFromBundle: arguments"+getArguments());
 
