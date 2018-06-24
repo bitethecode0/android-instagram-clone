@@ -68,13 +68,14 @@ public class ViewProfileFragment extends Fragment{
     private FirebaseMethods mFirebaseMethods;
 
     //widgets
-    private TextView mPosts, mFollowers, mFollowing, mDisplayName, mUsername, mWebsite, mDescription;
+    private TextView mPosts, mFollowers, mFollowing, mDisplayName, mUsername, mWebsite, mDescription, mFollow, mUnFollow;
     private ProgressBar mProgressBar;
     private CircleImageView mProfilePhoto;
     private GridView gridView;
     private Toolbar toolbar;
     private ImageView profileMenu;
     private BottomNavigationViewEx bottomNavigationView;
+    private TextView editProfiles;
 
     //vars
     private Context mContext;
@@ -104,6 +105,10 @@ public class ViewProfileFragment extends Fragment{
         toolbar = view.findViewById(R.id.profileToolbar);
         profileMenu = view.findViewById(R.id.profileMenu);
         bottomNavigationView = view.findViewById(R.id.bottomNavBar);
+        mFollow = view.findViewById(R.id.follow);
+        mUnFollow = view.findViewById(R.id.unfollow);
+        editProfiles = view.findViewById(R.id.textEditProfile);
+
         mFirebaseMethods = new FirebaseMethods(getActivity());
         mContext = getActivity();
 
@@ -115,17 +120,61 @@ public class ViewProfileFragment extends Fragment{
             Toast.makeText(mContext, "something went wrong", Toast.LENGTH_SHORT).show();
             getActivity().getSupportFragmentManager().popBackStack(); // back if it has something wrong
         }
-//
-//        TextView editProfiles = view.findViewById(R.id.textEditProfile);
-//        editProfiles.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent = new Intent(getActivity(),AccountSettingActivity.class);
-//                intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
-//                startActivity(intent);
-//
-//            }
-//        });
+        isFollowing();
+
+        mFollow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: now following "+mUser.getUsername());
+
+                FirebaseDatabase.getInstance().getReference()
+                        .child(getString(R.string.dbname_following))
+                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .child(mUser.getUser_id())
+                        .child(getString(R.string.field_user_id))
+                        .setValue(mUser.getUser_id());
+
+                FirebaseDatabase.getInstance().getReference()
+                        .child(getString(R.string.dbname_followers))
+                        .child(mUser.getUser_id())
+                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .child(getString(R.string.field_user_id))
+                        .setValue(FirebaseAuth.getInstance().getCurrentUser().getUid());
+                setFollowing();
+            }
+        });
+
+        mUnFollow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: now following "+mUser.getUsername());
+
+                FirebaseDatabase.getInstance().getReference()
+                        .child(getString(R.string.dbname_following))
+                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .child(mUser.getUser_id())
+                        .removeValue();
+
+                FirebaseDatabase.getInstance().getReference()
+                        .child(getString(R.string.dbname_followers))
+                        .child(mUser.getUser_id())
+                        .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                        .removeValue();
+                setUnFollowing();
+            }
+        });
+
+
+        editProfiles.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),AccountSettingActivity.class);
+                intent.putExtra(getString(R.string.calling_activity), getString(R.string.profile_activity));
+                startActivity(intent);
+
+            }
+        });
+
 
         setupBottomNavigationView();
         setupToolbar();
@@ -136,6 +185,53 @@ public class ViewProfileFragment extends Fragment{
         return view;
     }
 
+    private void setUnFollowing() {
+        Log.d(TAG, "setFollowing: updating UI for unfollowing this user");
+        mFollow.setVisibility(View.VISIBLE);
+        mUnFollow.setVisibility(View.GONE);
+        editProfiles.setVisibility(View.GONE);
+    }
+
+    private void setFollowing() {
+        Log.d(TAG, "setFollowing: updating UI for following this user");
+        mFollow.setVisibility(View.GONE);
+        mUnFollow.setVisibility(View.VISIBLE);
+        editProfiles.setVisibility(View.GONE);
+    }
+
+    private void setCurrentUsersProfile() {
+        Log.d(TAG, "setFollowing: updating UI for showing this user their own profile");
+        mFollow.setVisibility(View.GONE);
+        mUnFollow.setVisibility(View.GONE);
+        editProfiles.setVisibility(View.VISIBLE);
+    }
+
+    private void isFollowing(){
+        Log.d(TAG, "isFollowing: check if following this user.");
+        setUnFollowing();
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child(getString(R.string.dbname_following))
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .orderByChild(getString(R.string.field_user_id))
+                .equalTo(mUser.getUser_id());
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot singleSnapshot : dataSnapshot.getChildren()){
+                    Log.d(TAG, "onDataChange: found user "+dataSnapshot.getValue());
+                    setFollowing();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
     private void init() {
         // 1. setup the profile widgets
         DatabaseReference reference1 = FirebaseDatabase.getInstance().getReference();
