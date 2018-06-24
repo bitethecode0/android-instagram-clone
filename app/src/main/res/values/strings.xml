@@ -6,6 +6,7 @@
     <string name="profile_fragment">Profile</string>
     <string name="view_post_fragment">View Post</string>
     <string name="view_comment_fragment">View Comment</string>
+    <string name="view_profile_fragment">ViewProfile</string>
 
     <!--dialog names -->
     <string name="confirm_password_dialog">ConfirmPasswordDialog</string>
@@ -35,10 +36,13 @@
     <string name="selected_image">selected_image</string>
     <string name="selected_bitmap">selected_bitmap</string>
     <string name="return_to_fragment">return_to_fragment</string>
+    <string name="intent_user">intent_user</string>
+
 
     <!-- activity names -->
 
     <string name="profile_activity">Profile Activity</string>
+    <string name="search_activity">Search Activity</string>
 
     <!--tabs-->
     <string name="photo">Photo</string>

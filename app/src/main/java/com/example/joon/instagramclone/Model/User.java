@@ -1,6 +1,9 @@
 package com.example.joon.instagramclone.Model;
 
-public class User {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class User implements Parcelable {
     // make sure string value identical to the values in database
 
     private String user_id;
@@ -17,6 +20,25 @@ public class User {
     public User(){
 
     }
+
+    protected User(Parcel in) {
+        user_id = in.readString();
+        phone_number = in.readLong();
+        email = in.readString();
+        username = in.readString();
+    }
+
+    public static final Creator<User> CREATOR = new Creator<User>() {
+        @Override
+        public User createFromParcel(Parcel in) {
+            return new User(in);
+        }
+
+        @Override
+        public User[] newArray(int size) {
+            return new User[size];
+        }
+    };
 
     public String getUser_id() {
         return user_id;
@@ -53,5 +75,18 @@ public class User {
     @Override
     public String toString() {
         return super.toString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(user_id);
+        dest.writeLong(phone_number);
+        dest.writeString(email);
+        dest.writeString(username);
     }
 }

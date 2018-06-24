@@ -1,6 +1,7 @@
 package com.example.joon.instagramclone.Profile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import com.example.joon.instagramclone.Model.Photo;
 import com.example.joon.instagramclone.R;
 import com.example.joon.instagramclone.Utils.ViewCommentFragment;
 import com.example.joon.instagramclone.Utils.ViewPostFragment;
+import com.example.joon.instagramclone.Utils.ViewProfileFragment;
 
 public class ProfileActivity extends AppCompatActivity implements
         ProfileFragment.OnGridImageSelectedListener,
@@ -75,11 +77,35 @@ public class ProfileActivity extends AppCompatActivity implements
 
     private void init() {
         Log.d(TAG, "init: inflating " + getString(R.string.profile_fragment));
-        ProfileFragment fragment = new ProfileFragment();
-        FragmentTransaction transaction = ProfileActivity.this.getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.container, fragment);
-        transaction.addToBackStack(getString(R.string.profile_fragment));
-        transaction.commit();
+
+        Intent intent = getIntent();
+
+        if(intent.hasExtra(getString(R.string.calling_activity))){
+            Log.d(TAG, "init: searching for user object attached as intent extra.");
+
+            ViewProfileFragment fragment = new ViewProfileFragment();
+            Bundle args = new Bundle();
+            args.putParcelable(getString(R.string.intent_user),
+                    intent.getParcelableExtra(getString(R.string.intent_user)));
+
+            fragment.setArguments(args);
+
+            FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.container, fragment);
+            transaction.addToBackStack(getString(R.string.view_profile_fragment));
+            transaction.commit();
+
+
+        } else{
+            ProfileFragment fragment = new ProfileFragment();
+            FragmentTransaction transaction = ProfileActivity.this.getSupportFragmentManager().beginTransaction();
+            transaction.replace(R.id.container, fragment);
+            transaction.addToBackStack(getString(R.string.profile_fragment));
+            transaction.commit();
+        }
+
+
+
     }
 
 
