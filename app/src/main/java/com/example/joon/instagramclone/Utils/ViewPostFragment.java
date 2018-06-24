@@ -67,6 +67,7 @@ public class ViewPostFragment extends Fragment{
     private StringBuilder mUsers;
     private Boolean mLikedByCurrentUser;
     private String mLikeString;
+    private User mCurrentUser;
 
     public interface OnCommentThreadSelectedListener{
         void OnCommentThreadSelectedListener(Photo photo);
@@ -102,8 +103,9 @@ public class ViewPostFragment extends Fragment{
             mPhoto = getPhotoFromBundle();
             UniversalImageLoader.setImage(mPhoto.getImage_path(), mPostImage, null,"");
             mActivityNumber = getActivityNumberFromBundle();
+            getCurrentUser();
             getPhotoDetails();
-            getLikesString();
+
 
 
         } catch (NullPointerException e){
@@ -116,6 +118,30 @@ public class ViewPostFragment extends Fragment{
 
         
         return view;
+    }
+
+    private void getCurrentUser(){
+        Log.d(TAG, "getCurrentUser: getting the current user");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
+        Query query = reference.child(getString(R.string.dbname_users))
+                .orderByChild(getString(R.string.field_user_id))
+                .equalTo(FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()){
+                    mCurrentUser = ds.getValue(User.class);
+
+                }
+                getLikesString();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
 
@@ -151,7 +177,7 @@ public class ViewPostFragment extends Fragment{
 
                             String[] splitUsers = mUsers.toString().split(",");
 
-                            if(mUsers.toString().contains(mUserAccountSettings.getUsername())){
+                            if(mUsers.toString().contains(mCurrentUser.getUsername())){
                                 mLikedByCurrentUser = true;
                             }else{
                                 mLikedByCurrentUser = false;

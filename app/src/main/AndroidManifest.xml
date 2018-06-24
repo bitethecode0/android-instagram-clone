@@ -18,7 +18,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Home.HomeActivity"></activity>
-        <activity android:name=".Search.SearchActivity" />
+        <activity android:name=".Search.SearchActivity"
+            android:windowSoftInputMode="adjustNothing"/>
         <activity android:name=".Share.ShareActivity" />
         <activity android:name=".Likes.LikesActivity" />
         <activity android:name=".Profile.ProfileActivity"></activity>
